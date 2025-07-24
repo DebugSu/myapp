@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家教管理</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-hover: #3a56d4;
+            --danger-color: #f44336;
+            --danger-hover: #da190b;
+            --success-color: #4CAF50;
+            --warning-color: #ff9800;
+            --info-color: #2196F3;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --border-color: #e0e0e0;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f7fa;
+            --bg-card: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.2s ease;
+        }
+        
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        body { 
+            background: var(--bg-secondary); 
+            color: var(--text-primary); 
+            padding: 16px; 
+            line-height: 1.6; 
+        }
+
+        /* --- Components --- */
+        .btn { 
+            background: var(--primary-color); 
+            color: white; 
+            border: none; 
+            border-radius: var(--radius-sm); 
+            padding: 8px 16px; 
+            font-size: 14px; 
+            cursor: pointer; 
+            height: 36px; 
+            min-width: 64px; 
+            transition: var(--transition); 
+            display: inline-flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(67, 97, 238, 0.2);
+        }
+        .btn:hover { 
+            background: var(--primary-hover); 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+        }
+        .btn:active { 
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(67, 97, 238, 0.2);
+        }
+        .btn.secondary { 
+            background: var(--bg-secondary); 
+            color: var(--text-primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .btn.secondary:hover { 
+            background: #e0e0e0; 
+        }
+        .btn.danger { 
+            background: var(--danger-color); 
+            box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2);
+        }
+        .btn.danger:hover { 
+            background: var(--danger-hover); 
+            box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+        }
+        .btn.success { 
+            background: var(--success-color); 
+            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
+        }
+        .btn.success:hover { 
+            background: #43a047; 
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+        }
+        .btn.small { 
+            padding: 6px 12px; 
+            height: 32px; 
+            font-size: 13px; 
+            min-width: 52px; 
+        }
+        .btn:disabled { 
+            background: #bdbdbd; 
+            cursor: not-allowed; 
+            opacity: 0.7; 
+            transform: none;
+            box-shadow: none;
+        }
+        .btn:disabled:hover { 
+            background: #bdbdbd; 
+            transform: none;
+            box-shadow: none;
+        }
+
+        .card { 
+            background: var(--bg-card); 
+            border-radius: var(--radius-lg); 
+            padding: 20px; 
+            box-shadow: var(--shadow); 
+            display: flex; 
+            flex-direction: column; 
+            margin-bottom: 16px; 
+            transition: var(--transition);
+        }
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* --- Layout & Grids --- */
+        .header-actions { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+        .stats-container { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 16px; 
+            margin-bottom: 16px; 
+        }
+        .stats-container .card { 
+            margin-bottom: 0; 
+        }
+        .flex-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 16px; 
+        }
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 16px; 
+        }
+        .grid-7 { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 8px; 
+        }
+
+        /* --- Main UI Elements --- */
+        .stat-item { 
+            text-align: center; 
+            cursor: pointer; 
+            padding: 12px;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+        .stat-item:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        .stat-value { 
+            font-size: 20px; 
+            font-weight: 700; 
+            margin: 8px 0; 
+            color: var(--primary-color);
+        }
+        .stat-label { 
+            font-size: 13px; 
+            color: var(--text-secondary); 
+            font-weight: 500;
+        }
+        .unsettled-card { 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            cursor: pointer; 
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            transition: var(--transition);
+        }
+        .unsettled-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        .unsettled-card .stat-value {
+            color: white;
+            font-size: 24px;
+        }
+        .unsettled-card .stat-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* --- Calendar Styling --- */
+        .calendar-nav { 
+            display: flex; 
+            gap: 8px; 
+        }
+        .calendar-day { 
+            aspect-ratio: 1; 
+            background: var(--bg-secondary); 
+            border-radius: var(--radius-md); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            font-size: 14px; 
+            position: relative; 
+            transition: var(--transition); 
+            font-weight: 500;
+        }
+        .calendar-day:hover { 
+            background: #e3f2fd; 
+        }
+        .calendar-day.today { 
+            background: #e3f2fd; 
+            font-weight: bold; 
+            border: 2px solid var(--primary-color);
+        }
+        .calendar-day.other-month { 
+            color: #bdbdbd; 
+        }
+        .calendar-day.selected { 
+            background: var(--primary-color); 
+            color: white; 
+            box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+        }
+        .calendar-day span { 
+            display: inline-flex; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100%; 
+            height: 100%; 
+            transition: var(--transition); 
+        }
+        .calendar-day.has-lesson span { 
+            background-color: var(--success-color); 
+            color: white; 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+        }
+        .calendar-day.selected.has-lesson span { 
+            color: white; 
+        }
+
+        .list-item { 
+            display: flex; 
+            padding: 16px 0; 
+            border-bottom: 1px solid var(--border-color); 
+            align-items: center; 
+        }
+        .list-item:last-child { 
+            border-bottom: none; 
+        }
+        .item-details { 
+            flex: 1; 
+            min-width: 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            gap: 6px; 
+        }
+        .item-details strong { 
+            font-size: 16px; 
+        }
+        .item-details small { 
+            font-size: 13px; 
+            color: var(--text-secondary); 
+        }
+        .item-actions { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 8px; 
+            margin-left: 16px; 
+        }
+        .lesson-item .item-actions { 
+            grid-template-areas: "attend delete" "settle delete"; 
+        }
+        .lesson-item .item-actions .btn-attend { 
+            grid-area: attend; 
+        }
+        .lesson-item .item-actions .btn-settle { 
+            grid-area: settle; 
+        }
+        .lesson-item .item-actions .btn.danger { 
+            grid-area: delete; 
+            height: 100%; 
+        }
+
+        /* --- Modals --- */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.6); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+            animation: fadeIn 0.3s; 
+        }
+        .modal-content { 
+            background: var(--bg-card); 
+            padding: 24px; 
+            border-radius: var(--radius-lg); 
+            width: 90%; 
+            max-width: 420px; 
+            animation: slideUp 0.3s; 
+            display: flex; 
+            flex-direction: column; 
+            max-height: 75vh; 
+            box-shadow: var(--shadow-lg);
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        @keyframes slideUp { 
+            from { transform: translateY(20px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
+        .modal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            flex-shrink: 0; 
+        }
+        .modal-header h2 { 
+            margin: 0; 
+            font-weight: 600; 
+            font-size: 20px; 
+            color: var(--text-primary);
+        }
+        .modal-body { 
+            overflow-y: auto; 
+            scrollbar-width: none;
+            flex: 1;
+        }
+        .modal-body::-webkit-scrollbar { 
+            display: none;
+        }
+        .modal-footer { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 12px; 
+            margin-top: 24px; 
+            flex-shrink: 0; 
+        }
+        
+        /* --- Tabs --- */
+        .tab-header { 
+            display: flex; 
+            border-bottom: 2px solid var(--border-color); 
+            margin-bottom: 20px; 
+        }
+        .tab-btn { 
+            padding: 10px 16px; 
+            border: none; 
+            background: none; 
+            cursor: pointer; 
+            font-weight: 500; 
+            color: var(--text-secondary); 
+            transition: var(--transition); 
+            border-bottom: 2px solid transparent; 
+            margin-bottom: -2px;
+        }
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+        .tab-btn.active { 
+            border-bottom-color: var(--primary-color); 
+            color: var(--primary-color); 
+        }
+        .tab-content { 
+            display: none; 
+        } 
+        .tab-content.active { 
+            display: block; 
+        }
+        
+        /* --- Forms & Search --- */
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 500; 
+            color: var(--text-primary);
+        }
+        .form-control { 
+            width: 100%; 
+            padding: 12px 14px; 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius-sm); 
+            height: 44px; 
+            font-size: 15px; 
+            background: var(--bg-secondary); 
+            color: var(--text-primary); 
+            transition: var(--transition);
+        }
+        .form-control:focus { 
+            border-color: var(--primary-color); 
+            outline: none; 
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        .student-search-container { 
+            position: relative; 
+        }
+        #studentSearchResults { 
+            display: none; 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            right: 0; 
+            background: var(--bg-card); 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius-sm); 
+            box-shadow: var(--shadow); 
+            max-height: 180px; 
+            overflow-y: auto; 
+            z-index: 1001; 
+            margin-top: 4px;
+        }
+        .result-item { 
+            padding: 12px 14px; 
+            cursor: pointer; 
+            transition: var(--transition);
+        }
+        .result-item:hover { 
+            background-color: var(--bg-secondary); 
+        }
+
+        /* --- Detail/Unsettled List Styling (Unified) --- */
+        .detail-group { 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius-md); 
+            margin-bottom: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .detail-group-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 16px; 
+            background: var(--bg-secondary); 
+        }
+        .detail-group-title { 
+            font-weight: 600; 
+            color: var(--text-primary);
+        }
+        .detail-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 16px; 
+            border-bottom: 1px solid var(--border-color); 
+            font-size: 14px; 
+        }
+        .detail-item:last-child { 
+            border-bottom: none; 
+        }
+        .detail-item strong { 
+            font-weight: 500; 
+        }
+
+        /* --- Header --- */
+        header {
+            margin-bottom: 24px;
+        }
+        header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .item-actions {
+                grid-template-columns: 1fr;
+                grid-template-areas: "attend" "settle" "delete";
+            }
+            .modal-content {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>家教管理系统</h1>
+        <p>轻松管理学生、课程和收入</p>
+    </header>
+
+    <div class="flex-row">
+        <div></div>
+        <div class="header-actions">
+            <button class="btn" id="settingsBtn">设置</button>
+        </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="stats-container">
+        <div class="card">
+            <div class="grid-2">
+                <div class="stat-item" onclick="showHoursDetail()">
+                    <div class="stat-value" id="plannedHours">0</div>
+                    <div class="stat-label">预计课时</div>
+                </div>
+                <div class="stat-item" onclick="showHoursDetail()">
+                    <div class="stat-value" id="actualHours">0</div>
+                    <div class="stat-label">实际课时</div>
+                </div>
+                <div class="stat-item" onclick="showIncomeDetail()">
+                    <div class="stat-value" id="plannedIncome">¥0</div>
+                    <div class="stat-label">预计收入</div>
+                </div>
+                <div class="stat-item" onclick="showIncomeDetail()">
+                    <div class="stat-value" id="actualIncome">¥0</div>
+                    <div class="stat-label">实际收入</div>
+                </div>
+            </div>
+        </div>
+        <div class="card unsettled-card" onclick="showUnsettledModal()">
+            <div class="stat-value" id="unsettledIncome">¥0</div>
+            <div class="stat-label">待结算收入</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="flex-row">
+            <div id="calendarTitle"></div>
+            <div class="calendar-nav">
+                <button class="btn secondary small" id="todayBtn">今日</button>
+                <button class="btn secondary small" id="prevMonth">上月</button>
+                <button class="btn secondary small" id="nextMonth">下月</button>
+            </div>
+        </div>
+        <div class="grid-7">
+            <div style="text-align:center;font-size:13px;color:var(--text-secondary);padding:8px">日</div>
+            <div style="text-align:center;font-size:13px;color:var(--text-secondary);padding:8px">一</div>
+            <div style="text-align:center;font-size:13px;color:var(--text-secondary);padding:8px">二</div>
+            <div style="text-align:center;font-size:13px;color:var(--text-secondary);padding:8px">三</div>
+            <div style="text-align:center;font-size:13px;color:var(--text-secondary);padding:8px">四</div>
+            <div style="text-align:center;font-size:13px;color:var(--text-secondary);padding:8px">五</div>
+            <div style="text-align:center;font-size:13px;color:var(--text-secondary);padding:8px">六</div>
+        </div>
+        <div class="grid-7" id="calendarDays"></div>
+    </div>
+
+    <div class="card">
+        <div class="flex-row">
+            <div id="selectedDate">选择日期查看课程</div>
+            <button class="btn" id="addLessonBtn">添加课程</button>
+        </div>
+        <div id="lessonListContainer"></div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>设置</h2>
+                <div class="header-actions">
+                    <button class="btn small secondary" id="importBtn">导入</button>
+                    <button class="btn small secondary" id="exportBtn">导出</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="tab-header">
+                    <button class="tab-btn active" data-tab="manage">学生管理</button>
+                    <button class="tab-btn" data-tab="add">添加学生</button>
+                </div>
+                <div class="tab-content active" id="manageTab">
+                    <div id="studentListContainer"></div>
+                </div>
+                <div class="tab-content" id="addTab">
+                    <form id="addStudentForm">
+                        <div class="form-group">
+                            <label>学生姓名</label>
+                            <input type="text" id="studentName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>科目</label>
+                            <input type="text" id="studentSubject" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>生源</label>
+                            <input type="text" id="studentSource" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>课时费(元/小时)</label>
+                            <input type="number" id="studentRate" class="form-control" min="0" step="0.1">
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button class="btn" id="saveStudentBtn">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>编辑学生</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>学生姓名</label>
+                    <input type="text" id="editStudentName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>科目</label>
+                    <input type="text" id="editStudentSubject" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>生源</label>
+                    <input type="text" id="editStudentSource" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>课时费(元/小时)</label>
+                    <input type="number" id="editStudentRate" class="form-control" min="0" step="0.1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="saveEditStudentBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="lessonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加课程</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>学生</label>
+                    <div class="student-search-container">
+                        <input type="text" id="lessonStudentSearch" class="form-control" placeholder="搜索学生..." autocomplete="off">
+                        <div id="studentSearchResults"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>时间</label>
+                    <input type="time" id="lessonTime" class="form-control" value="18:00">
+                </div>
+                <div class="form-group">
+                    <label>时长(小时)</label>
+                    <input type="number" id="lessonDuration" class="form-control" step="0.5" min="0.5" value="2">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="saveLessonBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="unsettledModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>待结算课程</h2>
+            </div>
+            <div class="modal-body" id="unsettledListBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="hoursDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>课时详情</h2>
+            </div>
+            <div class="modal-body" id="hoursDetailBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="incomeDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>收入详情</h2>
+            </div>
+            <div class="modal-body" id="incomeDetailBody"></div>
+        </div>
+    </div>
+    
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+<script>
+// --- Global State & Data ---
+let students = JSON.parse(localStorage.getItem('students')) || [];
+let lessons = JSON.parse(localStorage.getItem('lessons')) || [];
+let currentDate = new Date();
+let selectedDate = null;
+let currentEditingStudentId = null;
+
+// --- Initialization & Event Listeners ---
+function init() {
+    // Top-level Actions
+    document.getElementById('settingsBtn').addEventListener('click', showSettingsModal);
+    document.getElementById('importBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+    document.getElementById('exportBtn').addEventListener('click', exportData);
+    document.getElementById('fileInput').addEventListener('change', handleFileImport);
+    
+    // Calendar Navigation
+    document.getElementById('todayBtn').addEventListener('click', goToToday);
+    document.getElementById('prevMonth').addEventListener('click', () => updateMonth(-1));
+    document.getElementById('nextMonth').addEventListener('click', () => updateMonth(1));
+    
+    // Lesson Management
+    document.getElementById('addLessonBtn').addEventListener('click', showAddLessonModal);
+    document.getElementById('saveLessonBtn').addEventListener('click', saveLesson);
+    
+    // Student Management
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+    document.getElementById('saveStudentBtn').addEventListener('click', saveStudent);
+    document.getElementById('saveEditStudentBtn').addEventListener('click', saveEditedStudent);
+    
+    // Student List Actions
+    document.getElementById('studentListContainer').addEventListener('click', handleStudentListActions);
+    
+    // Student Search Input
+    const studentSearchInput = document.getElementById('lessonStudentSearch');
+    studentSearchInput.addEventListener('input', () => handleStudentSearch(studentSearchInput.value));
+    studentSearchInput.addEventListener('focus', () => handleStudentSearch(studentSearchInput.value));
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.student-search-container')) {
+            document.getElementById('studentSearchResults').style.display = 'none';
+        }
+    });
+
+    initializeModalEventListeners();
+    goToToday(); // Load today's date on start
+}
+
+function initializeModalEventListeners() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) hideModal(modal.id);
+        });
+    });
+}
+
+// --- Core UI Update ---
+function updateAllUI() {
+    renderCalendar();
+    renderLessonsForDate(selectedDate);
+    updateStats();
+}
+
+// --- Calendar Logic ---
+function goToToday() {
+    currentDate = new Date();
+    selectDate(new Date());
+}
+function updateMonth(offset) {
+    currentDate.setMonth(currentDate.getMonth() + offset, 1);
+    selectDate(null);
+    updateAllUI();
+}
+function selectDate(date) {
+    selectedDate = date;
+    document.getElementById('selectedDate').textContent = date ? formatDate(date) : '选择日期查看课程';
+    updateAllUI();
+}
+function renderCalendar() { 
+    const year = currentDate.getFullYear(), month = currentDate.getMonth(); 
+    document.getElementById('calendarTitle').textContent = `${year}年${month + 1}月`; 
+    const firstDay = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0), startDay = firstDay.getDay(), daysInMonth = lastDay.getDate(); 
+    let calendarHTML = ''; 
+    const prevMonthLastDay = new Date(year, month, 0).getDate(); 
+    for (let i = startDay - 1; i >= 0; i--) { 
+        calendarHTML += `<div class="calendar-day other-month"><span>${prevMonthLastDay - i}</span></div>`; 
+    } 
+    const today = new Date(); 
+    for (let i = 1; i <= daysInMonth; i++) { 
+        const date = new Date(year, month, i); 
+        let dayClass = 'calendar-day'; 
+        if (isSameDay(date, today)) dayClass += ' today'; 
+        if (isSameDay(date, selectedDate)) dayClass += ' selected'; 
+        const hasLesson = lessons.some(l => isSameDay(new Date(l.date), date)); 
+        if (hasLesson) dayClass += ' has-lesson'; 
+        calendarHTML += `<div class="${dayClass}" onclick="selectDate(new Date(${date.getTime()}))"><span>${i}</span></div>`; 
+    } 
+    const totalDays = startDay + daysInMonth; 
+    const daysToAdd = totalDays % 7 === 0 ? 0 : 7 - (totalDays % 7); 
+    for (let i = 1; i <= daysToAdd; i++) { 
+        calendarHTML += `<div class="calendar-day other-month"><span>${i}</span></div>`; 
+    } 
+    document.getElementById('calendarDays').innerHTML = calendarHTML; 
+}
+
+// --- Student Search ---
+function handleStudentSearch(query) {
+    const searchResults = document.getElementById('studentSearchResults');
+    if (!query) {
+        searchResults.style.display = 'none';
+        return;
+    }
+    const filteredStudents = students.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+    if (filteredStudents.length > 0) {
+        searchResults.innerHTML = filteredStudents.map(s => `<div class="result-item" onclick="selectStudent('${s.id}', '${s.name}')">${s.name} <small style="color:var(--text-secondary);">(${s.subject})</small></div>`).join('');
+        searchResults.style.display = 'block';
+    } else {
+        searchResults.style.display = 'none';
+    }
+}
+function selectStudent(id, name) {
+    const searchInput = document.getElementById('lessonStudentSearch');
+    searchInput.value = name;
+    searchInput.dataset.selectedStudentId = id;
+    document.getElementById('studentSearchResults').style.display = 'none';
+}
+
+// --- Data Operations & Rendering ---
+function renderStudentList() { 
+    const container = document.getElementById('studentListContainer'); 
+    if (students.length === 0) { 
+        container.innerHTML = '<div style="padding:20px;color:var(--text-secondary);text-align:center">暂无学生数据</div>'; 
+        return; 
+    } 
+    container.innerHTML = students.map(student => `<div class="list-item"><div class="item-details"><strong>${student.name} - ${student.subject}</strong><small>${student.source || '无来源'} / ¥${student.rate || 0}/小时</small></div><div class="item-actions"><button class="btn small" data-id="${student.id}" data-action="edit">编辑</button><button class="btn small danger" data-id="${student.id}" data-action="delete">删除</button></div></div>`).join(''); 
+}
+function renderLessonsForDate(date) { 
+    const container = document.getElementById('lessonListContainer'); 
+    if (!date) { 
+        container.innerHTML = '<div style="padding:20px;color:var(--text-secondary);text-align:center">选择日期查看课程</div>'; 
+        return; 
+    } 
+    const studentMap = new Map(students.map(s => [s.id, s])); 
+    const dateLessons = lessons.filter(l => isSameDay(new Date(l.date), date)).sort((a, b) => a.time.localeCompare(b.time)); 
+    if (dateLessons.length === 0) { 
+        container.innerHTML = '<div style="padding:20px;color:var(--text-secondary);text-align:center">当天没有课程安排</div>'; 
+        return; 
+    } 
+    container.innerHTML = dateLessons.map(lesson => { 
+        const student = studentMap.get(lesson.studentId) || {}; 
+        return `<div class="list-item lesson-item"><div class="item-details"><strong>${student.name || '未知'} - ${student.subject || '无科目'}</strong><small>${formatTimeRange(lesson.time, lesson.duration)} / ${lesson.duration}小时</small></div><div class="item-actions"><button class="btn small btn-attend ${lesson.attended ? '' : 'secondary'}" onclick="toggleLessonStatus('${lesson.id}', 'attended')">${lesson.attended ? '✓' : '✗'} 上课</button><button class="btn small btn-settle ${lesson.paid ? '' : 'secondary'}" onclick="toggleLessonStatus('${lesson.id}', 'paid')">${lesson.paid ? '✓' : '✗'} 结算</button><button class="btn small danger" onclick="deleteLesson('${lesson.id}')">删除</button></div></div>`; 
+    }).join(''); 
+}
+function saveStudent() { 
+    const name = document.getElementById('studentName').value.trim(); 
+    if (!name) { 
+        alert('学生姓名不能为空'); 
+        return; 
+    } 
+    const newStudent = { 
+        id: Date.now().toString(), 
+        name, 
+        subject: document.getElementById('studentSubject').value.trim(), 
+        source: document.getElementById('studentSource').value.trim(), 
+        rate: parseFloat(document.getElementById('studentRate').value) || 0, 
+    }; 
+    students.push(newStudent); 
+    saveData(); 
+    document.getElementById('addStudentForm').reset(); 
+    renderStudentList(); 
+    switchTab('manage'); 
+}
+function editStudent(id) { 
+    const student = students.find(s => s.id === id); 
+    if (!student) return; 
+    currentEditingStudentId = id; 
+    document.getElementById('editStudentName').value = student.name; 
+    document.getElementById('editStudentSubject').value = student.subject; 
+    document.getElementById('editStudentSource').value = student.source; 
+    document.getElementById('editStudentRate').value = student.rate; 
+    showModal('editStudentModal'); 
+}
+function saveEditedStudent() { 
+    const index = students.findIndex(s => s.id === currentEditingStudentId); 
+    if (index === -1) return; 
+    const name = document.getElementById('editStudentName').value.trim(); 
+    if (!name) { 
+        alert('学生姓名不能为空'); 
+        return; 
+    } 
+    students[index] = { 
+        ...students[index], 
+        name, 
+        subject: document.getElementById('editStudentSubject').value.trim(), 
+        source: document.getElementById('editStudentSource').value.trim(), 
+        rate: parseFloat(document.getElementById('editStudentRate').value) || 0, 
+    }; 
+    saveData(); 
+    updateAllUI(); 
+    renderStudentList(); 
+    hideModal('editStudentModal'); 
+}
+function saveLesson() { 
+    const studentId = document.getElementById('lessonStudentSearch').dataset.selectedStudentId; 
+    const time = document.getElementById('lessonTime').value; 
+    const duration = parseFloat(document.getElementById('lessonDuration').value); 
+    if (!studentId || !time || isNaN(duration) || duration <= 0) return alert('请选择学生并填写完整的课程信息'); 
+    lessons.push({
+        id: Date.now().toString(), 
+        studentId, 
+        date: selectedDate.toISOString(), 
+        time, 
+        duration, 
+        attended: false, 
+        paid: false
+    }); 
+    saveData(); 
+    updateAllUI(); 
+    hideModal('lessonModal'); 
+}
+function handleStudentListActions(event) { 
+    const button = event.target.closest('button[data-action]'); 
+    if (!button) return; 
+    const { id, action } = button.dataset; 
+    if (action === 'edit') { 
+        editStudent(id); 
+    } else if (action === 'delete') { 
+        deleteStudent(id); 
+    } 
+}
+function deleteStudent(id) { 
+    if (!confirm('确定删除该学生吗？\n这将同时删除与该学生相关的所有课程记录。')) return; 
+    students = students.filter(s => s.id !== id); 
+    lessons = lessons.filter(l => l.studentId !== id); 
+    saveData(); 
+    renderStudentList(); 
+    updateAllUI(); 
+}
+function deleteLesson(id) { 
+    if (confirm('确定删除该课程吗？')) { 
+        lessons = lessons.filter(l => l.id !== id); 
+        saveData(); 
+        updateAllUI(); 
+    } 
+}
+function toggleLessonStatus(id, type) { 
+    const lesson = lessons.find(l => l.id === id); 
+    if (lesson) { 
+        if (type === 'paid' && !lesson.attended) return alert('课程未上，无法结算！'); 
+        lesson[type] = !lesson[type]; 
+        if (type === 'attended' && !lesson.attended) lesson.paid = false; 
+        saveData(); 
+        updateAllUI(); 
+    } 
+}
+function settleAllForSource(source) { 
+    const studentIds = students.filter(s => s.source === source).map(s => s.id); 
+    getLessonsForCurrentMonth().forEach(lesson => { 
+        if (studentIds.includes(lesson.studentId) && lesson.attended && !lesson.paid) lesson.paid = true; 
+    }); 
+    saveData(); 
+    updateAllUI(); 
+    showUnsettledModal(); 
+}
+function settleSingleLesson(lessonId) { 
+    toggleLessonStatus(lessonId, 'paid'); 
+    showUnsettledModal(); 
+}
+
+// --- Data Import/Export ---
+function exportData() {
+    const data = { 
+        students: JSON.parse(JSON.stringify(students)), 
+        lessons: JSON.parse(JSON.stringify(lessons)) 
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { 
+        type: 'application/json;charset=utf-8' 
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tutor-data-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 100);
+}
+function handleFileImport(event) { 
+    const file = event.target.files[0]; 
+    if (!file) return; 
+    if (!confirm('导入将覆盖所有当前数据，确定要继续吗？')) { 
+        event.target.value = ''; 
+        return; 
+    } 
+    const reader = new FileReader(); 
+    reader.onload = (e) => { 
+        try { 
+            const data = JSON.parse(e.target.result); 
+            if (Array.isArray(data.students) && Array.isArray(data.lessons)) { 
+                students = data.students; 
+                lessons = data.lessons; 
+                saveData(); 
+                goToToday(); 
+                hideModal('settingsModal'); 
+                alert('数据导入成功！'); 
+            } else { 
+                throw new Error('Invalid data structure'); 
+            } 
+        } catch (error) { 
+            alert('导入失败！文件格式不正确或已损坏。'); 
+        } finally { 
+            event.target.value = ''; 
+        } 
+    }; 
+    reader.readAsText(file); 
+}
+
+// --- Stats & Detail Modals ---
+function updateStats() { 
+    const lessonsThisMonth = getLessonsForCurrentMonth(), studentMap = new Map(students.map(s => [s.id, s])); 
+    let stats = { 
+        plannedHours: 0, 
+        actualHours: 0, 
+        plannedIncome: 0, 
+        actualIncome: 0, 
+        unsettledIncome: 0 
+    }; 
+    lessonsThisMonth.forEach(lesson => { 
+        const student = studentMap.get(lesson.studentId), 
+              rate = student ? student.rate : 0, 
+              income = lesson.duration * rate; 
+        stats.plannedHours += lesson.duration; 
+        stats.plannedIncome += income; 
+        if (lesson.attended) { 
+            stats.actualHours += lesson.duration; 
+            stats.actualIncome += income; 
+            if (!lesson.paid) stats.unsettledIncome += income; 
+        } 
+    }); 
+    document.getElementById('plannedHours').textContent = stats.plannedHours.toFixed(1); 
+    document.getElementById('actualHours').textContent = stats.actualHours.toFixed(1); 
+    document.getElementById('plannedIncome').textContent = `¥${stats.plannedIncome.toFixed(2)}`; 
+    document.getElementById('actualIncome').textContent = `¥${stats.actualIncome.toFixed(2)}`; 
+    document.getElementById('unsettledIncome').textContent = `¥${stats.unsettledIncome.toFixed(2)}`; 
+}
+function showHoursDetail() { 
+    const { statsBySource } = getMonthlyStats(); 
+    const body = document.getElementById('hoursDetailBody'); 
+    body.innerHTML = Object.entries(statsBySource).map(([source, data]) => `<div class="detail-group"><div class="detail-group-header"><div class="detail-group-title">${source}</div></div><div class="detail-item"><span>预计课时</span><strong>${data.plannedHours.toFixed(1)}</strong></div><div class="detail-item"><span>实际课时</span><strong>${data.actualHours.toFixed(1)}</strong></div></div>`).join(''); 
+    if (!body.innerHTML) body.innerHTML = '<div style="text-align:center;color:var(--text-secondary);">本月无课时数据</div>'; 
+    showModal('hoursDetailModal');
+}
+function showIncomeDetail() { 
+    const { statsBySource } = getMonthlyStats(); 
+    const body = document.getElementById('incomeDetailBody'); 
+    body.innerHTML = Object.entries(statsBySource).map(([source, data]) => `<div class="detail-group"><div class="detail-group-header"><div class="detail-group-title">${source}</div></div><div class="detail-item"><span>预计收入</span><strong>¥${data.plannedIncome.toFixed(2)}</strong></div><div class="detail-item"><span>实际收入</span><strong>¥${data.actualIncome.toFixed(2)}</strong></div></div>`).join(''); 
+    if (!body.innerHTML) body.innerHTML = '<div style="text-align:center;color:var(--text-secondary);">本月无收入数据</div>'; 
+    showModal('incomeDetailModal');
+}
+function showUnsettledModal() { 
+    const studentMap = new Map(students.map(s => [s.id, s])); 
+    const unsettledLessons = getLessonsForCurrentMonth().filter(l => l.attended && !l.paid); 
+    if (unsettledLessons.length === 0) { 
+        document.getElementById('unsettledListBody').innerHTML = '<div style="padding: 24px; text-align:center; color:var(--text-secondary);">本月课程已全部结清！</div>'; 
+        showModal('unsettledModal'); 
+        return; 
+    } 
+    const groupedBySource = unsettledLessons.reduce((acc, lesson) => { 
+        const student = studentMap.get(lesson.studentId); 
+        if (student) { 
+            const source = student.source || '未分类'; 
+            (acc[source] = acc[source] || []).push(lesson); 
+        } 
+        return acc; 
+    }, {}); 
+    document.getElementById('unsettledListBody').innerHTML = Object.entries(groupedBySource).map(([source, lessons]) => `<div class="detail-group"><div class="detail-group-header"><div class="detail-group-title">${source}</div><button class="btn small" onclick="settleAllForSource('${source}')">一键结算</button></div>${lessons.map(lesson => { 
+        const student = studentMap.get(lesson.studentId), 
+              fee = (lesson.duration * student.rate).toFixed(2); 
+        return `<div class="detail-item"><span><strong>${student.name}</strong> - ${new Date(lesson.date).getDate()}日 - ¥${fee}</span><button class="btn small" onclick="settleSingleLesson('${lesson.id}')">结算</button></div>`; 
+    }).join('')}</div>`).join(''); 
+    showModal('unsettledModal'); 
+}
+
+// --- Helpers & Utilities ---
+function getMonthlyStats() {
+    const studentMap = new Map(students.map(s => [s.id, s]));
+    const sources = [...new Set(students.map(s => s.source || '未分类'))];
+    const statsBySource = Object.fromEntries(sources.map(s => [s, { plannedHours: 0, actualHours: 0, plannedIncome: 0, actualIncome: 0 }]));
+    let hasData = false;
+    getLessonsForCurrentMonth().forEach(lesson => {
+        const student = studentMap.get(lesson.studentId);
+        if (student) {
+            hasData = true;
+            const source = student.source || '未分类';
+            const income = lesson.duration * student.rate;
+            statsBySource[source].plannedHours += lesson.duration;
+            statsBySource[source].plannedIncome += income;
+            if (lesson.attended) {
+                statsBySource[source].actualHours += lesson.duration;
+                statsBySource[source].actualIncome += income;
+            }
+        }
+    });
+    return hasData ? { studentMap, statsBySource } : { studentMap, statsBySource: {} };
+}
+function getLessonsForCurrentMonth() { 
+    const year = currentDate.getFullYear(), month = currentDate.getMonth(); 
+    return lessons.filter(l => { 
+        const d = new Date(l.date); 
+        return d.getFullYear() === year && d.getMonth() === month; 
+    }); 
+}
+function isSameDay(d1, d2) { 
+    return d1 && d2 && d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate(); 
+}
+function formatDate(date) { 
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`; 
+}
+function formatTimeRange(startTime, duration) { 
+    const [h, m] = startTime.split(':').map(Number); 
+    const endMins = h * 60 + m + duration * 60; 
+    const endH = Math.floor(endMins / 60) % 24; 
+    const endM = endMins % 60; 
+    return `${startTime}-${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}`; 
+}
+function saveData() { 
+    localStorage.setItem('students', JSON.stringify(students)); 
+    localStorage.setItem('lessons', JSON.stringify(lessons)); 
+}
+function showModal(id) { 
+    document.getElementById(id).style.display = 'flex'; 
+}
+function hideModal(id) { 
+    document.getElementById(id).style.display = 'none'; 
+}
+function showSettingsModal() { 
+    showModal('settingsModal'); 
+    renderStudentList(); 
+    switchTab('manage'); 
+}
+function showAddLessonModal() { 
+    if (!selectedDate) return alert('请先在日历上选择一个日期'); 
+    const searchInput = document.getElementById('lessonStudentSearch'); 
+    searchInput.value = ''; 
+    delete searchInput.dataset.selectedStudentId; 
+    document.getElementById('studentSearchResults').style.display = 'none'; 
+    showModal('lessonModal'); 
+}
+function switchTab(tabName) { 
+    document.querySelectorAll('#settingsModal .tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName)); 
+    document.querySelectorAll('#settingsModal .tab-content').forEach(content => content.classList.toggle('active', content.id === `${tabName}Tab`)); 
+}
+
+// --- Start Application ---
+init();
+</script>
+</body>
+</html>
